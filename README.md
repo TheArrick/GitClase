@@ -98,3 +98,56 @@ git commit -m "docs: update README with SSH setup guide"
 ```
  
 ---
+## Clase 3 — GitHub y Conexión Segura (SSH)
+ 
+### Git vs GitHub
+ 
+> **Git ≠ GitHub:** Git es el motor de versiones local. GitHub es la plataforma en la nube donde se alojan y comparten esos repositorios.
+ 
+### SSH vs HTTPS
+ 
+| | HTTPS | SSH |
+|-|-------|-----|
+| Autenticación | Pide credenciales en cada operación | Se configura una vez con una key |
+| Comodidad | Tedioso | Sin interrupciones |
+| Recomendado | No | **Siempre usar SSH** |
+ 
+### Configurar SSH
+ 
+```bash
+# 1. Generar la clave SSH
+ssh-keygen -t ed25519 -C "tu@correo.com"
+ 
+# 2. Copiar la clave pública
+cat ~/.ssh/id_ed25519.pub
+ 
+# 3. Verificar la conexión
+ssh -T git@github.com
+```
+ 
+Luego en GitHub: **Perfil → Settings → SSH and GPG Keys → New SSH Key**, pegar el contenido copiado.
+ 
+### Conectar repositorio local con GitHub
+ 
+```bash
+# Agregar el repositorio remoto
+git remote add origin git@github.com:TuUser/TuRepo.git
+ 
+# Renombrar la rama principal a main
+git branch -M main
+ 
+# Subir los cambios por primera vez
+git push -u origin main
+```
+ 
+### Comandos de sincronización
+ 
+```bash
+git push origin <rama>          # Subir commits al remoto
+git pull origin <rama>          # Bajar y fusionar cambios del remoto
+git clone <url>                 # Clonar un repositorio existente
+git remote set-url origin <url> # Cambiar la URL del remoto (ej. HTTPS → SSH)
+```
+ 
+---
+
