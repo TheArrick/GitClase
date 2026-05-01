@@ -223,5 +223,124 @@ git checkout -b <nueva-rama>
 - No trabajes mucho tiempo en estado Detached HEAD
 ---
 
-
+## Clase 5 — Ramas y Gitflow Básico
+ 
+### Ramas (Branches)
+ 
+Una rama es una bifurcación del estado del código que crea un camino paralelo de desarrollo. Permiten trabajar en nuevas funcionalidades sin afectar el código principal.
+ 
+```bash
+git branch                # Listar ramas y ver posición del HEAD
+git branch <nombre>       # Crear una nueva rama
+git branch -D <nombre>    # Borrar una rama
+```
+ 
+### Git Checkout vs Git Switch
+ 
+En 2019 (Git 2.23) se introdujo `git switch` para separar la navegación de ramas del resto de funciones de `checkout`.
+ 
+| | `git checkout` | `git switch` |
+|-|----------------|--------------|
+| Propósito | Multipropósito: ramas, commits, archivos | Especializado solo en ramas |
+| Riesgo | Puede dejarte en Detached HEAD fácilmente | Evita errores accidentales |
+| Cuándo usarlo | Comando clásico y universal | Comando moderno recomendado |
+ 
+```bash
+# Moderno (recomendado)
+git switch <rama>       # Cambiar de rama
+git switch -c <rama>    # Crear rama y cambiar a ella
+ 
+# Clásico
+git checkout <rama>     # Cambiar de rama
+git checkout -b <rama>  # Crear rama y cambiar a ella
+```
+ 
+### Gitflow — Flujo de trabajo con ramas
+ 
+Gitflow es un conjunto de reglas y convenciones para el uso de ramas que permite trabajar de forma ordenada en equipo.
+ 
+#### Ramas principales
+ 
+| Rama | Propósito |
+|------|-----------|
+| `main` | Código en producción, siempre estable |
+| `develop` | Pre-producción; aquí se integran funcionalidades antes de lanzar |
+ 
+#### Ramas de apoyo
+ 
+| Rama | Nace en | Muere en | Propósito |
+|------|---------|----------|-----------|
+| `feature/*` | `develop` | `develop` | Desarrollar una funcionalidad específica |
+| `release/*` | `develop` | `main` y `develop` | Preparar y pulir una nueva versión (QA) |
+| `hotfix/*` | `main` | `main` y `develop` | Arreglar bugs urgentes en producción |
+ 
+> **¿Por qué `hotfix` nace de `main` y no de `develop`?** Porque `develop` puede tener cambios inestables. Un parche de producción debe partir de un estado estable.
+ 
+#### Convención de nombres
+ 
+```
+feature/add-search-bar
+feature/new-user-form
+ 
+release/v1.0.0
+release/v2.1.0-beta
+ 
+hotfix/fix-login-error
+hotfix/security-patch-v1.0.2
+```
+ 
+---
+ 
+## Clase 6 — Merge, Fetch, Pull, Push y Flujo de Trabajo
+ 
+### Fetch vs Pull vs Push
+ 
+| Comando | Qué hace |
+|---------|----------|
+| `git fetch` | Consulta el remoto y avisa si hay cambios, pero **no los aplica** localmente. |
+| `git pull` | Trae y aplica todos los cambios del remoto a tu rama local (fetch + merge). |
+| `git push` | Sube tus commits locales al repositorio remoto. |
+ 
+```bash
+git fetch                  # Consultar sin aplicar
+git pull origin <rama>     # Bajar y aplicar cambios
+git push origin <rama>     # Subir commits
+git push origin -u <rama>  # Subir por primera vez (crea la rama en el remoto)
+```
+ 
+### Git Merge
+ 
+`git merge` fusiona una rama con otra, combinando los commits de ambas.
+ 
+```bash
+git merge --no-ff <rama>
+```
+ 
+El flag `--no-ff` (no fast-forward) fuerza la creación de un commit de merge, preservando el registro de que existió una rama aunque luego se borre.
+ 
+### Flujo de trabajo completo (merge sin Pull Request)
+ 
+```bash
+# 1. Posicionarse en develop
+git checkout develop
+ 
+# 2. Consultar si hay cambios remotos sin aplicar
+git fetch
+ 
+# 3. Traer y aplicar los cambios de develop
+git pull origin develop
+ 
+# 4. Fusionar la rama conservando el historial
+git merge --no-ff <rama>
+ 
+# 5. Si hay conflictos, resolverlos manualmente y luego:
+git add .
+git commit  # Guardar el mensaje de merge en el editor
+ 
+# 6. Eliminar la rama ya fusionada
+git branch -D <rama>
+ 
+# 7. Subir develop actualizado
+git push origin develop
+```
 
