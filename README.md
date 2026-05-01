@@ -151,3 +151,77 @@ git remote set-url origin <url> # Cambiar la URL del remoto (ej. HTTPS → SSH)
  
 ---
 
+
+## Clase 4 — Remotos, SSH Múltiple y Git Checkout
+ 
+### Gestión de remotos
+ 
+```bash
+git remote -v                    # Ver URLs remotas
+git remote add <apodo> <url>     # Vincular repositorio local con uno remoto
+git remote set-url <apodo> <url> # Cambiar la URL del remoto
+```
+ 
+### SSH múltiple (varias cuentas de GitHub)
+ 
+Cada cuenta de GitHub necesita su propia llave SSH. Se gestiona con el archivo `~/.ssh/config`:
+ 
+```bash
+# Generar llave con nombre distinto
+ssh-keygen -t ed25519 -C "micorreo@gmail.com" -f ~/.ssh/id_trabajo
+```
+ 
+```
+# ~/.ssh/config
+ 
+# Cuenta principal
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519
+ 
+# Cuenta secundaria
+Host github-trabajo
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_trabajo
+```
+ 
+| Campo | Descripción |
+|-------|-------------|
+| `Host` | Alias de la conexión (lo que escribes después de `git@`) |
+| `HostName` | Dirección real del servidor, siempre `github.com` |
+| `User` | Usuario del sistema remoto, siempre `git` en GitHub |
+| `IdentityFile` | Ruta exacta a la llave privada para ese Host |
+ 
+Al clonar, usar el Host correspondiente:
+```bash
+git clone git@github-trabajo:usuario/repo.git
+```
+ 
+### Git Checkout
+ 
+`git checkout` mueve el HEAD hacia un commit o rama específica. Sirve para inspeccionar el pasado, restaurar archivos y experimentar sin tocar la rama principal.
+ 
+```bash
+git checkout <hash>   # Ir a un commit específico
+git checkout main     # Volver a la rama principal
+```
+ 
+### Estado Detached HEAD
+ 
+Ocurre cuando HEAD apunta directamente a un commit fijo (no a una rama). En este estado eres un "espectador en el pasado": puedes ver todo, pero si te vas sin crear una rama, los cambios que hayas hecho se pierden.
+ 
+```bash
+# Si quieres conservar los cambios hechos en Detached HEAD:
+git checkout -b <nueva-rama>
+```
+ 
+**Buenas prácticas:**
+- Asegúrate de tener todo commiteado antes de moverte al pasado
+- Si vas a escribir mucho código, crea una rama desde el inicio
+- No trabajes mucho tiempo en estado Detached HEAD
+---
+
+
+
